@@ -19,31 +19,33 @@ def g(xs, ys, n):
         return (xs, ys)
 
 
-def find(xs, ys):
+def find_peaks_and_troughs(xs, ys):
     direction = 'inc'
-    points = []
+    peaks = []
+    troughs = []
     for i, (a, b) in enumerate(zip(ys, ys[1:])):
         if(a < b):
             if(direction == 'dec'):
-                points.append(i)
+                troughs.append(i)
             direction = 'inc'
         elif(a > b):
             if(direction == 'inc'):
-                points.append(i)
+                peaks.append(i)
             direction = 'dec'
-    return [xs[i] for i in points]
+    return [xs[i] for i in peaks], [xs[i] for i in troughs]
     # print('i ', i, ' a ', a, ' b ', b)
 
 
 smoothing_factor = 10
 xs, ys = g(range(len(levels)), levels, smoothing_factor)
 print(ys[0:10])
-changes = find(xs, ys)
-changes_ys = [ys[c] for c in changes]
-print(list(zip(map(int, changes), map(int, changes_ys))))
+peaks, _ = find_peaks_and_troughs(xs, ys)
+changes_ys = [ys[c] for c in peaks]
+print(list(zip(map(int, peaks), map(int, changes_ys))))
+# plt.plot(range(len(levels)), levels, '-')
 plt.plot(xs, ys, '-')
-plt.plot(changes, changes_ys, '*')
+plt.plot(peaks, changes_ys, '*')
 plt.show()
 
 with open('frames-i-care-about.txt', 'w') as file:
-    file.write(json.dumps(changes))
+    file.write(json.dumps(peaks))
