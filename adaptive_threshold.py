@@ -1,12 +1,17 @@
-import cv2
+import cv2 as cv
 import numpy as np
 import imageio
 
-frame = cv2.imread('img.png')
-gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-img = cv2.adaptiveThreshold(
-    gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
-cv2.imshow('win', img)
-cv2.waitKey(0)
 
-cv2.destroyAllWindows()
+cap = cv.VideoCapture('vid.mp4')
+writer = imageio.get_writer('adaptive-threshold.mp4', fps=30)
+while(cap.isOpened()):
+    _, frame = cap.read()
+    frame = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+    frame = cv.adaptiveThreshold(
+        frame, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 11, 2)
+    frame = cv.cvtColor(frame, cv.COLOR_GRAY2BGR)
+    writer.append_data(frame)
+
+cap.release()
+writer.close()
