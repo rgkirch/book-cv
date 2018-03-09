@@ -17,8 +17,10 @@ def f(l):
 
 
 def get(w, h):
-    segment_lengths = sorted(set([int(w / (x+1))
-                                  for x in range(h)]), reverse=True)
+    segment_lengths = sorted(set([w // x
+                                  for x in range(1, h)]), reverse=True)
+    segment_lengths += sorted(set([w //
+                                   x for x in range(-h, 0)]), reverse=True)
     data = []
     for segment_length in segment_lengths:
         num_changes = 0
@@ -26,16 +28,13 @@ def get(w, h):
         # print("hi")
         for y_offset in range(h):
             # print("y_offset", y_offset)
-            s = sorted(
-                set([x // segment_length for x in range(w)]), reverse=True)
-            # print(s)
-            pxs = []
-            for e in s:
-                pxs.extend(img[(e+y_offset) % h]
-                           [e*segment_length: (e+1)*segment_length])
-            num_changes += f(pxs)
+            for row_y_start in range(w//segment_length):
+                pxs = []
+                pxs.extend(img[(row_y_start+y_offset) % h][row_y_start *
+                                                           segment_length: (row_y_start+1)*segment_length])
+                num_changes += f(pxs)
         data.append(num_changes)
-    return (data, segment_lengths)
+    return (segment_lengths, data)
 
 
 img = cv.imread(sys.argv[1], 0)
@@ -43,7 +42,7 @@ img = cv.adaptiveThreshold(
     img, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 11, 2)
 # print(img[0][0:2])
 h, w = img.shape[:2]
-data, segment_lengths = get(w, h)
+segment_lengths, data = get(w, h)
 print("data")
 print(data)
 print("segs")
