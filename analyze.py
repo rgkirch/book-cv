@@ -13,6 +13,8 @@ def f(l):
         for b in l[1:]:
             if b == a:
                 c += 1
+            else:
+                break
         return c
 
 
@@ -34,7 +36,9 @@ with open('analyze.data', 'w') as file:
     file.write(json.dumps(data))
 
 
-# cv.imshow('img', img)
+cv.namedWindow('img', cv.WINDOW_GUI_EXPANDED |
+               cv.WINDOW_KEEPRATIO)
+cv.imshow('img', img)
 plt.imshow(data)
 plt.colorbar()
 plt.show()
