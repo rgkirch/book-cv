@@ -4,12 +4,8 @@ import cv2 as cv
 import sys
 
 
-def update(dummy=None):
-    if seed_pt is None:
-        cv.imshow('image', img)
-        return
-    wide = max(1, cv.getTrackbarPos('wide', 'image'))
-    tall = max(1, cv.getTrackbarPos('tall', 'image'))
+def f(img, wide, tall):
+    global mask
     wide_kernel = np.ones((1, wide))
     tall_kernel = np.ones((tall, 1))
     wide_img = cv.erode(img, wide_kernel)
@@ -19,6 +15,16 @@ def update(dummy=None):
     mask[:] = 0
     cv.floodFill(copy, mask, seed_pt, (200, 50, 50),
                  (1,)*3, (1,)*3, cv.FLOODFILL_FIXED_RANGE | 4 | (255 << 8))
+    return copy
+
+
+def update(dummy=None):
+    if seed_pt is None:
+        cv.imshow('image', img)
+        return
+    wide = max(1, cv.getTrackbarPos('wide', 'image'))
+    tall = max(1, cv.getTrackbarPos('tall', 'image'))
+    copy = f(img, wide, tall)
     cv.imshow('image', copy)
 
 
