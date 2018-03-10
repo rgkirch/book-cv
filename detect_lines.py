@@ -9,14 +9,14 @@ import math
 
 def average_chain_lengths(l):
     if len(l) > 0:
-        a = l[0]
-        c = 1
-        for b in l[1:]:
-            if b == a:
-                c += 1
-            else:
-                break
-        return c
+        num_chains = 1 if l[0] else 0
+        num = 0
+        for x, n in zip(l, l[1:]):
+            if(not x and n):
+                num_chains += 1
+            if(x):
+                num += 1
+        return num / num_chains
 
 
 def get(res, w, h):
@@ -33,7 +33,7 @@ def get(res, w, h):
 
 
 data = None
-res = 20
+res = 360
 
 arg = sys.argv[1]
 if arg.endswith('data'):
