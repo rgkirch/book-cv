@@ -5,12 +5,17 @@ import sys
 
 
 def update(dummy=None):
-    iters = cv.getTrackbarPos('iters', 'image')
-    sz = cv.getTrackbarPos('sz', 'image')
     if seed_pt is None:
         cv.imshow('image', img)
         return
-    copy = cv.cvtColor(img, cv.COLOR_GRAY2BGR)
+    wide = max(1, cv.getTrackbarPos('wide', 'image'))
+    tall = max(1, cv.getTrackbarPos('tall', 'image'))
+    wide_kernel = np.ones((1, wide))
+    tall_kernel = np.ones((tall, 1))
+    wide_img = cv.erode(img, wide_kernel)
+    tall_img = cv.erode(img, tall_kernel)
+    copy = cv.bitwise_or(wide_img, tall_img)
+    copy = cv.cvtColor(copy, cv.COLOR_GRAY2BGR)
     mask[:] = 0
     cv.floodFill(copy, mask, seed_pt, (200, 50, 50),
                  (1,)*3, (1,)*3, cv.FLOODFILL_FIXED_RANGE | 4 | (255 << 8))
@@ -31,8 +36,8 @@ h, w = img.shape
 mask = np.zeros((h+2, w+2), np.uint8)
 seed_pt = None
 update()
-cv.createTrackbar('sz', 'image', 2, 10, update)
-cv.createTrackbar('iters', 'image', 1, 10, update)
+cv.createTrackbar('wide', 'image', 1, 10, update)
+cv.createTrackbar('tall', 'image', 1, 10, update)
 cv.setMouseCallback('image', onmouse)
 
 cv.waitKey(0)
